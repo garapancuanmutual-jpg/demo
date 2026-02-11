@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif
+}
+
+body{
+  margin:0;
+  background:#f27c2c;
+}
+
+.bg{
+  min-height:100vh;
+  background:
+    linear-gradient(180deg,rgba(242,124,44,.85),rgba(253,231,216,.95)),
+    url("https://files.catbox.moe/pre3ap.png");
+  background-size:cover;
+  background-position:center top;
+  background-repeat:no-repeat;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px 16px;
+}
+
+.card{
+  width:100%;
+  max-width:360px;
+  background:#fff3ea;
+  border-radius:22px;
+  padding:22px 18px 26px;
+  box-shadow:0 14px 32px rgba(0,0,0,.2);
+}
+
+.logo{
+  display:flex;
+  justify-content:center;
+  margin-bottom:16px;
+}
+
+.logo img{
+  width:78px;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:18px;
+  box-shadow:0 6px 14px rgba(0,0,0,.22);
+}
+
+.input-group{
+  background:#fddcc4;
+  border-radius:28px;
+  display:flex;
+  align-items:center;
+  padding:11px 14px;
+  margin-bottom:14px;
+}
+
+.input-group input{
+  border:none;
+  outline:none;
+  background:transparent;
+  flex:1;
+  font-size:14px;
+}
+
+.code{
+  font-weight:600;
+  margin-right:8px;
+}
+
+.eye{
+  cursor:pointer;
+}
+
+.captcha img{
+  width:74px;
+  height:32px;
+  border-radius:6px;
+  object-fit:cover;
+  margin-left:8px;
+}
+
+.btn{
+  margin-top:8px;
+  width:100%;
+  padding:13px;
+  border:none;
+  border-radius:28px;
+  background:#f2690d;
+  color:#fff;
+  font-size:15px;
+  font-weight:700;
+}
+
+.login{
+  margin-top:16px;
+  text-align:center;
+  font-size:14px;
+  color:#f2690d;
+}
+
+.login a{
+  color:#f2690d;
+  font-weight:700;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg">
+  <div class="card">
+
+    <div class="logo">
+      <img src="https://files.catbox.moe/wg0w1e.png">
+    </div>
+
+    <div class="input-group">
+      <span class="code">62</span>
+      <input id="phone" type="tel" placeholder="Nomor telepon">
+    </div>
+
+    <div class="input-group">
+      <input id="password" type="password" placeholder="Password">
+      <span class="eye" onclick="toggle()">👁</span>
+    </div>
+
+    <div class="input-group captcha">
+      <input type="text" placeholder="Captcha (demo)">
+      <img src="https://dummyimage.com/80x35/eee/333&text=qUzt">
+    </div>
+
+    <div class="input-group">
+      <input id="reff" type="text" placeholder="Kode Reff (opsional)">
+    </div>
+
+    <button class="btn" onclick="register()">REGISTER</button>
+
+    <p class="login">Sudah punya akun? <a href="#">Login</a></p>
+
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB_eFit5rt0-wOHMp30sw5rsOUzgU1jbQ8",
+  authDomain: "antamgrow.firebaseapp.com",
+  databaseURL: "https://antamgrow-default-rtdb.firebaseio.com",
+  projectId: "antamgrow",
+  storageBucket: "antamgrow.firebasestorage.app",
+  messagingSenderId: "890745577643",
+  appId: "1:890745577643:web:e47aefbd6f1db50fa497ee"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+window.toggle = function(){
+  const p = document.getElementById("password");
+  p.type = p.type === "password" ? "text" : "password";
+}
+
+window.register = function(){
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const reff = document.getElementById("reff").value.trim();
+
+  if(phone.length < 8 || password.length < 6){
+    alert("Nomor atau password tidak valid");
+    return;
+  }
+
+  const email = phone + "@antamgrow.com";
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(res=>{
+      return set(ref(db,"users/"+res.user.uid),{
+        phone:phone,
+        reff:reff||"-",
+        createdAt:Date.now()
+      });
+    })
+    .then(()=>alert("Register berhasil"))
+    .catch(err=>alert(err.message));
+}
+</script>
+
+</body>
+</html>

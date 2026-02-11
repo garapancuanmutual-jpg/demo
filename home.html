@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FOXCONN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #FF8C00; /* Oren tua */
+            min-height: 100vh;
+            padding-bottom: 140px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            padding-top: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #FF8C00; /* Oren tua */
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            margin-left: 12px;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .icon {
+            font-size: 24px;
+            color: white;
+        }
+        
+        /* BANNER ATAS - Background oren */
+        .banner-container {
+            padding: 10px 20px;
+            margin-bottom: 15px;
+            background: #FF8C00; /* Oren tua */
+        }
+        
+        .banner {
+            width: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .banner-img {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            object-fit: contain;
+        }
+        
+        /* MENU ICONS - Background oren tanpa card */
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 0 20px;
+            margin-bottom: 25px;
+            background: #FF8C00; /* Oren tua */
+        }
+        
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .menu-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            /* Hapus backdrop-filter dan border untuk menghilangkan card effect */
+            border: none;
+        }
+        
+        .menu-icon-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+        
+        .menu-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: white;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+        
+        /* CONTAINER UTAMA */
+        .main-container {
+            padding: 0 15px;
+            margin-top: 10px;
+            background: #FF8C00; /* Oren tua */
+        }
+        
+        /* NOTIFICATION SECTION - Background oren */
+        .notification-section {
+            margin-bottom: 25px;
+            background: #FF8C00; /* Oren tua */
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            background: #FF8C00; /* Oren tua */
+        }
+        
+        .notification-container {
+            position: relative;
+            width: 100%;
+            height: 165px;
+            overflow: hidden;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .notification-track {
+            position: absolute;
+            width: 100%;
+            height: 300%;
+            top: 0;
+            animation: slideUp 15s linear infinite;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: center;
+            height: 55px;
+            padding: 0 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid transparent;
+        }
+        
+        /* Warna tipe notifikasi yang disesuaikan dengan tema oren */
+        .komisi {
+            border-left-color: #ff5722;
+        }
+        
+        .komisi .notification-icon {
+            background: linear-gradient(135deg, #ff5722, #e64a19);
+        }
+        
+        .deposit {
+            border-left-color: #4caf50;
+        }
+        
+        .deposit .notification-icon {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+        
+        .penarikan {
+            border-left-color: #ffffff;
+        }
+        
+        .penarikan .notification-icon {
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+        }
+        
+        .notification-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 14px;
+            color: #FF8C00; /* Oren tua */
+        }
+        
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notification-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .notification-type {
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2px;
+        }
+        
+        .phone-number {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .notification-amount {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffeb3b;
+            white-space: nowrap;
+        }
+        
+        /* ANIMASI BARU: NAIK BERSAMA SEPERTI ANTRIAN */
+        @keyframes slideUp {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-110px);
+            }
+        }
+        
+        /* CHAT BUTTON */
+        .chat-button {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            z-index: 100;
+            overflow: hidden;
+            background: white;
+            padding: 6px;
+        }
+        
+        .chat-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #e0e0e0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 3px;
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #888;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-label {
+            color: #FF8C00; /* Oren tua */
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 360px) {
+            .menu-container {
+                gap: 10px;
+                padding: 0 15px;
+            }
+            
+            .menu-icon {
+                width: 55px;
+                height: 55px;
+            }
+            
+            .menu-icon-img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .menu-label {
+                font-size: 11px;
+            }
+            
+            .notification-container {
+                height: 165px;
+            }
+            
+            .notification-item {
+                height: 55px;
+                padding: 0 12px;
+            }
+            
+            .notification-icon {
+                width: 30px;
+                height: 30px;
+                margin-right: 10px;
+                font-size: 13px;
+            }
+            
+            .chat-button {
+                width: 55px;
+                height: 55px;
+                bottom: 80px;
+                right: 15px;
+                padding: 5px;
+            }
+            
+            .banner-img {
+                max-height: 150px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .banner-img {
+                max-height: 200px;
+            }
+            
+            .menu-icon {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .menu-icon-img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .menu-label {
+                font-size: 13px;
+            }
+            
+            .notification-container {
+                height: 165px;
+            }
+            
+            .main-container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+        
+        /* HIDE SCROLLBARS */
+        @media (max-width: 768px) {
+            body::-webkit-scrollbar {
+                display: none;
+            }
+            
+            body {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://files.catbox.moe/wg0w1e.png" alt="FOXCONN" class="logo-img">
+            <div class="logo-text">FOXCONN</div>
+        </div>
+        <div class="header-icons">
+            <i class="fas fa-globe icon"></i>
+            <i class="fas fa-bell icon"></i>
+        </div>
+    </div>
+
+    <!-- BANNER ATAS -->
+    <div class="banner-container">
+        <div class="banner">
+            <img src="https://files.catbox.moe/i1bf7g.jpg" alt="Banner FOXCONN" class="banner-img">
+        </div>
+    </div>
+
+    <!-- MENU ICONS -->
+    <div class="menu-container">
+        <a href="deposit.html" class="menu-item">
+            <div class="menu-icon">
+                <img src="https://files.catbox.moe/k4f6fu.png" alt="Deposit" class="menu-icon-img">
+            </div>
+            <div class="menu-label">Deposit</div>
+        </a>
+        
+        <a href="penarikan.html" class="menu-item">
+            <div class="menu-icon">
+                <img src="https://i.postimg.cc/YjbHp7w3/phishing.png" alt="Penarikan" class="menu-icon-img">
+            </div>
+            <div class="menu-label">Penarikan</div>
+        </a>
+        
+        <a href="checkin.html" class="menu-item">
+            <div class="menu-icon">
+                <img src="https://i.postimg.cc/DJ6tyrRW/event.png" alt="Check-In" class="menu-icon-img">
+            </div>
+            <div class="menu-label">Check-In</div>
+        </a>
+        
+        <a href="invite.html" class="menu-item">
+            <div class="menu-icon">
+                <img src="https://files.catbox.moe/08n64r.png" alt="Invite" class="menu-icon-img">
+            </div>
+            <div class="menu-label">Invite</div>
+        </a>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- NOTIFICATION SECTION -->
+        <div class="notification-section">
+            <div class="section-title">📢 Aktivitas Terbaru</div>
+            <div class="notification-container">
+                <div class="notification-track" id="notificationTrack">
+                    <!-- Notifikasi akan di-generate oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT BUTTON -->
+    <a href="customer-service.html" class="chat-button">
+        <img src="https://i.postimg.cc/xcmVLzzF/pngtree-3d-cartoon-businessman-wearing-headset-clipart-illustration-png-image-13710409-2-11zon.png" alt="Customer Service">
+    </a>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item active">
+            <i class="fas fa-home nav-icon"></i>
+            <div class="nav-label">Home</div>
+        </a>
+        
+        <a href="plans.html" class="nav-item">
+            <i class="fas fa-tractor nav-icon"></i>
+            <div class="nav-label">Plans</div>
+        </a>
+        
+        <a href="team.html" class="nav-item">
+            <i class="fas fa-users nav-icon"></i>
+            <div class="nav-label">Team</div>
+        </a>
+        
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <div class="nav-label">Profile</div>
+        </a>
+    </nav>
+
+    <!-- SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // HANYA mencegah gesture zoom (lebih ringan)
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Disable right click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Preload gambar
+            const imageUrls = [
+                'https://files.catbox.moe/wg0w1e.png',
+                'https://files.catbox.moe/k4f6fu.png',
+                'https://i.postimg.cc/YjbHp7w3/phishing.png',
+                'https://i.postimg.cc/DJ6tyrRW/event.png',
+                'https://files.catbox.moe/08n64r.png',
+                'https://files.catbox.moe/i1bf7g.jpg',
+                'https://i.postimg.cc/xcmVLzzF/pngtree-3d-cartoon-businessman-wearing-headset-clipart-illustration-png-image-13710409-2-11zon.png'
+            ];
+            
+            imageUrls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+            });
+            
+            // DATA NOTIFIKASI
+            const notificationTypes = [
+                { 
+                    type: 'komisi', 
+                    name: 'Komisi',
+                    minAmount: 50000,
+                    maxAmount: 1000000,
+                    icon: 'fa-money-bill-wave'
+                },
+                { 
+                    type: 'penarikan', 
+                    name: 'Penarikan',
+                    minAmount: 100000,
+                    maxAmount: 2000000,
+                    icon: 'fa-wallet'
+                },
+                { 
+                    type: 'deposit', 
+                    name: 'Deposit',
+                    minAmount: 50000,
+                    maxAmount: 1500000,
+                    icon: 'fa-coins'
+                }
+            ];
+            
+            // NOMOR HP SEMUA OPERATOR DENGAN FORMAT 08838****
+            const phoneNumbers = [
+                '0811****', '0812****', '0813****', '0821****', '0822****', '0823****', '0851****', '0852****', '0853****',
+                '0814****', '0815****', '0816****', '0855****', '0856****', '0857****', '0858****',
+                '0817****', '0818****', '0819****', '0859****', '0877****', '0878****',
+                '0831****', '0832****', '0833****', '0838****',
+                '0895****', '0896****', '0897****', '0898****', '0899****',
+                '0881****', '0882****', '0883****', '0884****', '0885****', '0886****', '0887****', '0888****',
+                '0851****', '0850****'
+            ];
+            
+            // GENERATE JUMLAH UANG KECIL-KECILAN
+            function generateSmallAmount(min, max) {
+                const amount = Math.floor(Math.random() * (max - min + 1)) + min;
+                
+                if (amount >= 1000000) {
+                    const juta = amount / 1000000;
+                    return 'Rp ' + juta.toFixed(juta % 1 === 0 ? 0 : 1).replace('.', ',') + ' Jt';
+                } else if (amount >= 100000) {
+                    const ratusRibu = amount / 1000;
+                    return 'Rp ' + ratusRibu.toFixed(0) + ' Rb';
+                } else if (amount >= 50000) {
+                    const puluhRibu = amount / 1000;
+                    return 'Rp ' + puluhRibu.toFixed(0) + ' Rb';
+                } else {
+                    return 'Rp ' + amount.toLocaleString('id-ID');
+                }
+            }
+            
+            // GENERATE NOTIFIKASI BARU
+            function generateNotification() {
+                const notifType = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+                const phone = phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)];
+                const amount = generateSmallAmount(notifType.minAmount, notifType.maxAmount);
+                
+                return {
+                    type: notifType.type,
+                    name: notifType.name,
+                    icon: notifType.icon,
+                    phone: phone,
+                    amount: amount
+                };
+            }
+            
+            // BUAT 6 NOTIFIKASI UNTUK ANIMASI YANG SMOOTH
+            function createNotificationItems() {
+                const notificationTrack = document.getElementById('notificationTrack');
+                notificationTrack.innerHTML = '';
+                
+                for (let i = 0; i < 6; i++) {
+                    const notification = generateNotification();
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = `notification-item ${notification.type}`;
+                    
+                    notificationItem.innerHTML = `
+                        <div class="notification-icon">
+                            <i class="fas ${notification.icon}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-info">
+                                <div class="notification-type">${notification.name}</div>
+                                <div class="phone-number">${notification.phone}</div>
+                            </div>
+                            <div class="notification-amount">${notification.amount}</div>
+                        </div>
+                    `;
+                    
+                    notificationTrack.appendChild(notificationItem);
+                }
+            }
+            
+            // UPDATE NOTIFIKASI SETIAP 15 DETIK
+            function updateNotifications() {
+                const notificationTrack = document.getElementById('notificationTrack');
+                const items = notificationTrack.children;
+                
+                for (let i = 0; i < items.length; i++) {
+                    const notification = generateNotification();
+                    const item = items[i];
+                    
+                    item.className = `notification-item ${notification.type}`;
+                    item.innerHTML = `
+                        <div class="notification-icon">
+                            <i class="fas ${notification.icon}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-info">
+                                <div class="notification-type">${notification.name}</div>
+                                <div class="phone-number">${notification.phone}</div>
+                            </div>
+                            <div class="notification-amount">${notification.amount}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // INISIALISASI
+            createNotificationItems();
+            
+            // JALANKAN UPDATE SETIAP 15 DETIK
+            setInterval(updateNotifications, 15000);
+            
+            // **PERUBAHAN PENTING**: Hapus semua pencegahan scroll dan refresh
+            // Biarkan browser berfungsi normal untuk refresh
+            
+            // Mencegah zoom dengan double tap (opsional)
+            let lastTap = 0;
+            document.addEventListener('touchend', function(e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 500 && tapLength > 0) {
+                    e.preventDefault();
+                }
+                lastTap = currentTime;
+            });
+        });
+        
+        // Pastikan halaman bisa di-scroll dan di-refresh
+        window.addEventListener('beforeunload', function() {
+            // Kosongkan event listener yang mungkin mengganggu
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Tim Kerja</title>
+
+<!-- Import Firebase Modular -->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+  import { getFirestore, doc, getDoc, collection, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAuJSxpcFZ1QI-dEsEnx2qSqlb0wsvs6Mc",
+    authDomain: "lginvest-776cf.firebaseapp.com",
+    databaseURL: "https://lginvest-776cf-default-rtdb.firebaseio.com",
+    projectId: "lginvest-776cf",
+    storageBucket: "lginvest-776cf.firebasestorage.app",
+    messagingSenderId: "831934282072",
+    appId: "1:831934282072:web:6a8b7a5bcba5d4d1264d2d",
+    measurementId: "G-265YF9DYCF"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+  
+  // Make Firebase available globally
+  window.firebaseApp = app;
+  window.firebaseAnalytics = analytics;
+  window.firebaseDB = db;
+  
+  console.log("Firebase initialized successfully");
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    touch-action: pan-y;
+}
+html,body{
+    width:100%;
+    height:100%;
+    overscroll-behavior:none;
+}
+body{
+    font-family:Arial,sans-serif;
+    background:#FF8C00;
+    min-height: 100vh;
+    padding-bottom: 140px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+/* LOADING SPINNER */
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: white;
+    font-weight: 600;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* HEADER */
+.header{
+    background:#FF8C00;
+    color:#fff;
+    text-align:center;
+    padding: 15px 20px;
+    padding-top: 25px;
+    font-size:20px;
+    font-weight:700;
+    position:sticky;
+    top:0;
+    z-index:50;
+}
+
+/* MAIN */
+.main-content{
+    flex:1;
+    overflow-y:auto;
+    background:linear-gradient(to bottom,#FF8C00 0%,#FFB067 45%,#FFD3A5 100%);
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling:touch;
+}
+
+/* CONTAINER */
+.container{
+    padding:15px;
+}
+
+/* INVITE */
+.invite-section{
+    background:#FFE6D5;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:20px;
+    border:1px solid rgba(255,255,255,0.3);
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+.invite-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.invite-label{
+    font-size:14px;
+    color:#666;
+    font-weight:600;
+    margin-bottom:5px;
+}
+.invite-code{
+    font-size:24px;
+    font-weight:900;
+    color:#333;
+    letter-spacing:3px;
+    font-family:monospace;
+}
+.copy-btn{
+    background:#FF8C00;
+    color:#fff;
+    border:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition:all 0.2s;
+    border:2px solid white;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+.copy-btn:active{
+    transform:scale(0.95);
+    background:#E67E00;
+}
+
+/* LEVEL CARD */
+.level-card{
+    background:#FFEDE0;
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:20px;
+    border:1px solid rgba(255,255,255,0.3);
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+.level-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+.level-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:16px;
+    color:#333;
+}
+.level-left i{
+    color:#FF8C00;
+    font-size:18px;
+}
+.commission-badge{
+    background:#FF8C00;
+    color:#fff;
+    padding:6px 12px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+}
+.lihat-btn{
+    background:#333;
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+}
+.lihat-btn:active{
+    transform:scale(0.95);
+    background:#222;
+}
+
+/* STATS */
+.stats-grid{
+    display:flex;
+    justify-content:space-between;
+    margin-top:10px;
+}
+.stats-grid > div{
+    text-align:center;
+    flex:1;
+}
+.stat-value{
+    font-size:18px;
+    font-weight:900;
+    color:#000;
+    margin-bottom:4px;
+    font-family:monospace;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.stat-label{
+    font-size:12px;
+    color:#666;
+    font-weight:600;
+}
+
+/* BOTTOM NAVIGATION - SAMA PERSIS DENGAN HOME.HTML */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    border-top: 1px solid #e0e0e0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+}
+
+.nav-icon {
+    font-size: 20px;
+    color: #888;
+    margin-bottom: 3px;
+}
+
+.nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+}
+
+.nav-item.active .nav-icon,
+.nav-item.active .nav-label {
+    color: #FF8C00;
+}
+
+/* RESPONSIVE */
+@media (max-width: 360px) {
+    .header {
+        padding: 15px;
+        font-size: 18px;
+    }
+    
+    .invite-code {
+        font-size: 20px;
+        letter-spacing: 2px;
+    }
+    
+    .copy-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+    
+    .level-left {
+        font-size: 14px;
+    }
+    
+    .stat-value {
+        font-size: 16px;
+    }
+    
+    .stats-grid > div {
+        padding: 0 3px;
+    }
+    
+    .bottom-nav {
+        padding: 10px 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .bottom-nav {
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* HIDE SCROLLBARS */
+@media (max-width: 768px) {
+    body::-webkit-scrollbar {
+        display: none;
+    }
+    
+    body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .main-content::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .main-content {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Tim Kerja</div>
+
+<div class="main-content">
+<div class="container">
+
+<!-- INVITE -->
+<div class="invite-section">
+    <div class="invite-row">
+        <div>
+            <div class="invite-label">Kode Invite</div>
+            <div class="invite-code" id="inviteCode">Loading...</div>
+        </div>
+        <button class="copy-btn" id="copyBtn">Copy</button>
+    </div>
+</div>
+
+<!-- LEVEL 1 -->
+<div class="level-card">
+    <div class="level-header">
+        <div class="level-left"><i class="fas fa-users"></i> Level 1</div>
+        <div class="commission-badge">Komisi 30%</div>
+        <button class="lihat-btn" onclick="viewLevel(1)">Lihat</button>
+    </div>
+    <div class="stats-grid">
+        <div>
+            <div class="stat-value" id="level1Members">0</div>
+            <div class="stat-label">Total Member</div>
+        </div>
+        <div>
+            <div class="stat-value" id="level1Deposit">Rp 0</div>
+            <div class="stat-label">Total Deposit</div>
+        </div>
+        <div>
+            <div class="stat-value" id="level1Commission">Rp 0</div>
+            <div class="stat-label">Total Komisi</div>
+        </div>
+    </div>
+</div>
+
+<!-- LEVEL 2 -->
+<div class="level-card">
+    <div class="level-header">
+        <div class="level-left"><i class="fas fa-users"></i> Level 2</div>
+        <div class="commission-badge">Komisi 3%</div>
+        <button class="lihat-btn" onclick="viewLevel(2)">Lihat</button>
+    </div>
+    <div class="stats-grid">
+        <div>
+            <div class="stat-value" id="level2Members">0</div>
+            <div class="stat-label">Total Member</div>
+        </div>
+        <div>
+            <div class="stat-value" id="level2Deposit">Rp 0</div>
+            <div class="stat-label">Total Deposit</div>
+        </div>
+        <div>
+            <div class="stat-value" id="level2Commission">Rp 0</div>
+            <div class="stat-label">Total Komisi</div>
+        </div>
+    </div>
+</div>
+
+<!-- LEVEL 3 -->
+<div class="level-card">
+    <div class="level-header">
+        <div class="level-left"><i class="fas fa-users"></i> Level 3</div>
+        <div class="commission-badge">Komisi 1%</div>
+        <button class="lihat-btn" onclick="viewLevel(3)">Lihat</button>
+    </div>
+    <div class="stats-grid">
+        <div>
+            <div class="stat-value" id="level3Members">0</div>
+            <div class="stat-label">Total Member</div>
+        </div>
+        <div>
+            <div class="stat-value" id="level3Deposit">Rp 0</div>
+            <div class="stat-label">Total Deposit</div>
+        </div>
+        <div>
+            <div class="stat-value" id="level3Commission">Rp 0</div>
+            <div class="stat-label">Total Komisi</div>
+        </div>
+    </div>
+</div>
+
+<!-- LOADING INDICATOR -->
+<div id="loadingIndicator" class="loading" style="display: none;">
+    <div class="spinner"></div>
+    <div>Memuat data tim...</div>
+</div>
+
+</div>
+</div>
+
+<!-- BOTTOM NAVIGATION - SAMA PERSIS DENGAN HOME.HTML -->
+<nav class="bottom-nav">
+    <a href="home.html" class="nav-item">
+        <i class="fas fa-home nav-icon"></i>
+        <div class="nav-label">Home</div>
+    </a>
+    
+    <a href="plans.html" class="nav-item">
+        <i class="fas fa-tractor nav-icon"></i>
+        <div class="nav-label">Plans</div>
+    </a>
+    
+    <a href="team.html" class="nav-item active">
+        <i class="fas fa-users nav-icon"></i>
+        <div class="nav-label">Team</div>
+    </a>
+    
+    <a href="profile.html" class="nav-item">
+        <i class="fas fa-user nav-icon"></i>
+        <div class="nav-label">Profile</div>
+    </a>
+</nav>
+
+<script>
+// USER ID - ini harus diambil dari auth atau localStorage
+// Untuk demo, kita anggap user sudah login dan ID disimpan di localStorage
+let currentUserId = localStorage.getItem('userId') || 'user_default_id';
+let currentUserInviteCode = localStorage.getItem('inviteCode') || 'X9YJT';
+
+// Format angka untuk display
+function formatCurrency(amount) {
+    if (!amount) return 'Rp 0';
+    if (amount >= 1000000000) {
+        const milyar = amount / 1000000000;
+        return 'Rp ' + milyar.toFixed(milyar % 1 === 0 ? 0 : 1).replace('.', ',') + ' M';
+    } else if (amount >= 1000000) {
+        const juta = amount / 1000000;
+        return 'Rp ' + juta.toFixed(juta % 1 === 0 ? 0 : 1).replace('.', ',') + ' Jt';
+    } else if (amount >= 1000) {
+        const ribu = amount / 1000;
+        return 'Rp ' + ribu.toFixed(ribu % 1 === 0 ? 0 : 1).replace('.', ',') + ' Rb';
+    } else {
+        return 'Rp ' + amount.toLocaleString('id-ID');
+    }
+}
+
+// Format angka tanpa "Rp" untuk jumlah member
+function formatNumber(num) {
+    if (!num) return '0';
+    if (num >= 1000000) {
+        const juta = num / 1000000;
+        return juta.toFixed(juta % 1 === 0 ? 0 : 1).replace('.', ',') + ' Jt';
+    } else if (num >= 1000) {
+        const ribu = num / 1000;
+        return ribu.toFixed(ribu % 1 === 0 ? 0 : 1).replace('.', ',') + ' Rb';
+    }
+    return num.toLocaleString('id-ID');
+}
+
+// Fungsi untuk mengambil data tim dari Firebase
+async function loadTeamDataFromFirebase() {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.style.display = 'block';
+    
+    try {
+        // Tunggu Firebase siap
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Tampilkan kode invite
+        document.getElementById('inviteCode').textContent = currentUserInviteCode;
+        
+        console.log("Memulai load data untuk user:", currentUserId);
+        
+        // Struktur data untuk menyimpan hasil
+        const teamStats = {
+            level1: { members: 0, deposit: 0, commission: 0 },
+            level2: { members: 0, deposit: 0, commission: 0 },
+            level3: { members: 0, deposit: 0, commission: 0 }
+        };
+        
+        // 1. Ambil data user saat ini untuk mendapatkan kode invite
+        const userDoc = await getDoc(doc(window.firebaseDB, "users", currentUserId));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            currentUserInviteCode = userData.inviteCode || 'X9YJT';
+            document.getElementById('inviteCode').textContent = currentUserInviteCode;
+            localStorage.setItem('inviteCode', currentUserInviteCode);
+        }
+        
+        // 2. Hitung total untuk setiap level
+        const usersRef = collection(window.firebaseDB, "users");
+        
+        // LEVEL 1: User yang direfer langsung oleh current user
+        const level1Query = query(usersRef, where("referrerCode", "==", currentUserInviteCode));
+        const level1Snapshot = await getDocs(level1Query);
+        
+        teamStats.level1.members = level1Snapshot.size;
+        
+        // Hitung deposit dan komisi level 1
+        for (const docSnap of level1Snapshot.docs) {
+            const userData = docSnap.data();
+            const depositAmount = parseFloat(userData.totalDeposit || 0);
+            teamStats.level1.deposit += depositAmount;
+            teamStats.level1.commission += depositAmount * 0.30; // 30% komisi
+            
+            // Simpan ID user level 1 untuk mencari level 2
+            const level1UserId = docSnap.id;
+            const level1UserCode = userData.inviteCode;
+            
+            if (level1UserCode) {
+                // LEVEL 2: User yang direfer oleh level 1
+                const level2Query = query(usersRef, where("referrerCode", "==", level1UserCode));
+                const level2Snapshot = await getDocs(level2Query);
+                
+                teamStats.level2.members += level2Snapshot.size;
+                
+                // Hitung deposit dan komisi level 2
+                for (const level2Doc of level2Snapshot.docs) {
+                    const level2Data = level2Doc.data();
+                    const level2Deposit = parseFloat(level2Data.totalDeposit || 0);
+                    teamStats.level2.deposit += level2Deposit;
+                    teamStats.level2.commission += level2Deposit * 0.03; // 3% komisi
+                    
+                    // Simpan ID user level 2 untuk mencari level 3
+                    const level2UserId = level2Doc.id;
+                    const level2UserCode = level2Data.inviteCode;
+                    
+                    if (level2UserCode) {
+                        // LEVEL 3: User yang direfer oleh level 2
+                        const level3Query = query(usersRef, where("referrerCode", "==", level2UserCode));
+                        const level3Snapshot = await getDocs(level3Query);
+                        
+                        teamStats.level3.members += level3Snapshot.size;
+                        
+                        // Hitung deposit dan komisi level 3
+                        for (const level3Doc of level3Snapshot.docs) {
+                            const level3Data = level3Doc.data();
+                            const level3Deposit = parseFloat(level3Data.totalDeposit || 0);
+                            teamStats.level3.deposit += level3Deposit;
+                            teamStats.level3.commission += level3Deposit * 0.01; // 1% komisi
+                        }
+                    }
+                }
+            }
+        }
+        
+        console.log("Data tim berhasil diambil:", teamStats);
+        
+        // Update UI dengan data real
+        updateTeamUI(teamStats);
+        
+    } catch (error) {
+        console.error("Error mengambil data dari Firebase:", error);
+        
+        // Fallback ke data demo jika error
+        const demoData = {
+            level1: { members: 8, deposit: 5250000, commission: 1575000 },
+            level2: { members: 32, deposit: 21000000, commission: 630000 },
+            level3: { members: 128, deposit: 84000000, commission: 840000 }
+        };
+        
+        updateTeamUI(demoData);
+        
+        alert("Koneksi internet bermasalah. Menampilkan data terakhir.");
+    } finally {
+        loadingIndicator.style.display = 'none';
+    }
+}
+
+// Update UI dengan data
+function updateTeamUI(data) {
+    // Update Level 1
+    document.getElementById('level1Members').textContent = formatNumber(data.level1.members);
+    document.getElementById('level1Deposit').textContent = formatCurrency(data.level1.deposit);
+    document.getElementById('level1Commission').textContent = formatCurrency(data.level1.commission);
+    
+    // Update Level 2
+    document.getElementById('level2Members').textContent = formatNumber(data.level2.members);
+    document.getElementById('level2Deposit').textContent = formatCurrency(data.level2.deposit);
+    document.getElementById('level2Commission').textContent = formatCurrency(data.level2.commission);
+    
+    // Update Level 3
+    document.getElementById('level3Members').textContent = formatNumber(data.level3.members);
+    document.getElementById('level3Deposit').textContent = formatCurrency(data.level3.deposit);
+    document.getElementById('level3Commission').textContent = formatCurrency(data.level3.commission);
+}
+
+function viewLevel(level){
+    window.location.href=`my-team.html?level=${level}`;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Coba ambil user ID dari URL atau localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdFromUrl = urlParams.get('userId');
+    
+    if (userIdFromUrl) {
+        currentUserId = userIdFromUrl;
+        localStorage.setItem('userId', userIdFromUrl);
+    } else if (!localStorage.getItem('userId')) {
+        // Jika tidak ada user ID, redirect ke login
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Setup copy button
+    document.getElementById("copyBtn").onclick = function() {
+        const code = document.getElementById('inviteCode').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = this.innerText;
+            this.innerText = "Disalin!";
+            setTimeout(() => {
+                this.innerText = originalText;
+            }, 1500);
+        }).catch(err => {
+            console.error('Gagal copy:', err);
+            alert('Gagal menyalin kode');
+        });
+    };
+    
+    // Setup Firebase setelah delay untuk memastikan Firebase terload
+    setTimeout(() => {
+        if (window.firebaseDB) {
+            loadTeamDataFromFirebase();
+        } else {
+            console.warn("Firebase belum siap, coba lagi...");
+            setTimeout(loadTeamDataFromFirebase, 2000);
+        }
+    }, 1500);
+    
+    // Mencegah gesture zoom
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+    
+    // Disable right click
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Refresh data setiap 30 detik
+    setInterval(() => {
+        if (window.firebaseDB) {
+            loadTeamDataFromFirebase();
+        }
+    }, 30000);
+    
+    // Mencegah double tap zoom
+    let lastTap = 0;
+    document.addEventListener('touchend', function(e) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 500 && tapLength > 0) {
+            e.preventDefault();
+        }
+        lastTap = currentTime;
+    });
+});
+
+// Fungsi untuk debug/test
+window.refreshTeamData = function() {
+    if (window.firebaseDB) {
+        loadTeamDataFromFirebase();
+    } else {
+        alert("Firebase belum terinisialisasi");
+    }
+};
+</script>
+
+</body>
+</html>

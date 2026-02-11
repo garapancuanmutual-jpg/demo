@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Produk</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: pan-y;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overscroll-behavior: none;
+        }
+        
+        body {
+            background: #FF8C00;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 140px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        /* MAIN SCROLLABLE AREA */
+        .main-content {
+            flex: 1;
+            background: linear-gradient(to bottom, 
+                #FF8C00 0%, 
+                #FF9800 20%, 
+                #FFA726 40%, 
+                #FFB74D 60%, 
+                #FFCC80 80%, 
+                #FFE0B2 100%);
+            padding-bottom: 70px;
+        }
+        
+        /* Hide scrollbar but keep functionality */
+        .main-content::-webkit-scrollbar {
+            width: 0px;
+        }
+        
+        /* HEADER */
+        .header {
+            background: #FF8C00;
+            color: #fff;
+            padding: 15px 20px;
+            padding-top: 25px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .orders-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .orders-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* CONTENT */
+        .container {
+            padding: 14px;
+            padding-bottom: 20px;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 140, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 140, 0, 0.3);
+        }
+        
+        .card-top {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .card img {
+            width: 140px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #FF8C00;
+        }
+        
+        .info {
+            flex: 1;
+        }
+        
+        .badge {
+            background: linear-gradient(135deg, #FF8C00, #FF6B00);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(255, 107, 0, 0.3);
+        }
+        
+        .price-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .price {
+            font-size: 22px;
+            font-weight: 900;
+            color: #FF8C00;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* PERBAIKAN BAGIAN STATS */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            background: #FFF8E1;
+            padding: 10px 8px;
+            border-radius: 12px;
+            border: 1px solid #FFE0B2;
+        }
+        
+        .stats div {
+            flex: 1;
+            text-align: center;
+            padding: 2px 4px;
+        }
+        
+        .stats strong {
+            font-size: 16px;
+            font-weight: 900;
+            color: #FF8C00;
+            display: block;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+        
+        .stats span {
+            font-size: 11px;
+            color: #FF9800;
+            font-weight: 600;
+            line-height: 1.1;
+            display: block;
+        }
+        
+        .invest {
+            width: 100%;
+            margin-top: 8px;
+            padding: 16px 0;
+            font-size: 18px;
+            font-weight: 900;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #FF8C00, #FF6B00);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(255, 107, 0, 0.3);
+        }
+        
+        .invest:active {
+            transform: scale(0.98);
+            background: linear-gradient(135deg, #FF6B00, #E65100);
+            box-shadow: 0 2px 5px rgba(255, 107, 0, 0.3);
+        }
+        
+        /* LOADING STATE */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* BOTTOM NAVIGATION - SAMA PERSIS DENGAN HOME.HTML */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #e0e0e0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 3px;
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #888;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-label {
+            color: #FF8C00;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 360px) {
+            .card {
+                padding: 14px;
+                margin-bottom: 14px;
+            }
+            
+            .card img {
+                width: 120px;
+                height: 95px;
+            }
+            
+            .badge {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+            
+            .price {
+                font-size: 20px;
+            }
+            
+            .stats {
+                padding: 8px 6px;
+            }
+            
+            .stats strong {
+                font-size: 15px;
+            }
+            
+            .stats span {
+                font-size: 10px;
+            }
+            
+            .invest {
+                padding: 14px 0;
+                font-size: 16px;
+            }
+            
+            .orders-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+            }
+            
+            .bottom-nav {
+                padding: 10px 0;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 600px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            
+            .card {
+                max-width: 600px;
+            }
+            
+            .bottom-nav {
+                max-width: 600px;
+                margin: 0 auto;
+                width: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        
+        /* HIDE SCROLLBARS */
+        @media (max-width: 768px) {
+            body::-webkit-scrollbar {
+                display: none;
+            }
+            
+            body {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            
+            .main-content::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .main-content {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+    </style>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-title">Daftar Produk</div>
+        <a href="my-orders.html" class="orders-icon">
+            <i class="fas fa-shopping-bag"></i>
+        </a>
+    </div>
+    
+    <!-- SCROLLABLE MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container" id="list">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Memuat produk...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- BOTTOM NAVIGATION - SAMA PERSIS DENGAN HOME.HTML -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fas fa-home nav-icon"></i>
+            <div class="nav-label">Home</div>
+        </a>
+        
+        <a href="plans.html" class="nav-item active">
+            <i class="fas fa-tractor nav-icon"></i>
+            <div class="nav-label">Plans</div>
+        </a>
+        
+        <a href="team.html" class="nav-item">
+            <i class="fas fa-users nav-icon"></i>
+            <div class="nav-label">Team</div>
+        </a>
+        
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <div class="nav-label">Profile</div>
+        </a>
+    </nav>
+    
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWmr9vV5ZZ-5k5OK6uMAObMq8qCGnzRSU",
+            authDomain: "foxconn-1b8a5.firebaseapp.com",
+            projectId: "foxconn-1b8a5",
+            storageBucket: "foxconn-1b8a5.firebasestorage.app",
+            messagingSenderId: "584099064363",
+            appId: "1:584099064363:web:2d5a2a2ef0a75d8a0e2b38",
+            measurementId: "G-WG8K07Q4ST"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mencegah gesture zoom
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Disable right click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Preload gambar
+            const imageUrls = [
+                'https://files.catbox.moe/6zjhd1.jpeg'
+            ];
+            
+            imageUrls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+            });
+            
+            // Load products
+            loadProducts();
+        });
+        
+        // ============================================
+        // FIREBASE DATA FETCHING
+        // ============================================
+        async function loadProducts() {
+            try {
+                const listEl = document.getElementById('list');
+                
+                // Try to get products from Firestore
+                const snapshot = await db.collection('products').orderBy('order').get();
+                
+                if (snapshot.empty) {
+                    // If no data in Firestore, use default data
+                    console.log('No products found in Firestore, using default data');
+                    useDefaultData();
+                    return;
+                }
+                
+                // Clear loading state
+                listEl.innerHTML = '';
+                
+                // Process Firestore data
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    renderProductCard(product);
+                });
+                
+            } catch (error) {
+                console.error('Error loading products from Firebase:', error);
+                // Fallback to default data if Firebase fails
+                useDefaultData();
+            }
+        }
+        
+        // ============================================
+        // DEFAULT DATA (FALLBACK)
+        // ============================================
+        const defaultData = [
+            {n:'NIKON-1', p:500, d:100, t:3000},
+            {n:'NIKON-2', p:1000, d:300, t:9000},
+            {n:'NIKON-3', p:1500, d:500, t:15000},
+            {n:'NIKON-4', p:2000, d:700, t:21000},
+            {n:'NIKON-5', p:2500, d:900, t:27000},
+            {n:'NIKON-6', p:3000, d:1100, t:33000},
+            {n:'NIKON-7', p:3500, d:1300, t:39000},
+            {n:'NIKON-8', p:4000, d:1500, t:45000},
+            {n:'NIKON-9', p:4500, d:1700, t:51000},
+            {n:'NIKON-10', p:5000, d:2000, t:60000}
+        ];
+        
+        function useDefaultData() {
+            const listEl = document.getElementById('list');
+            listEl.innerHTML = '';
+            
+            defaultData.forEach((product, index) => {
+                // Add delay for animation
+                setTimeout(() => {
+                    renderProductCard(product);
+                }, index * 100);
+            });
+        }
+        
+        // ============================================
+        // RENDER PRODUCT CARD WITH ANIMATION
+        // ============================================
+        function renderProductCard(product) {
+            const listEl = document.getElementById('list');
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            card.innerHTML = `
+                <div class="card-top">
+                    <img src="https://files.catbox.moe/6zjhd1.jpeg" alt="${product.n}">
+                    <div class="info">
+                        <div class="badge">${product.n}</div>
+                        <div class="price-label">Harga:</div>
+                        <div class="price">Rp ${product.p.toLocaleString('id-ID')}</div>
+                    </div>
+                </div>
+                <div class="stats">
+                    <div><strong>Rp ${product.d.toLocaleString('id-ID')}</strong><span>Profit Harian</span></div>
+                    <div><strong>Rp ${product.t.toLocaleString('id-ID')}</strong><span>Total Profit</span></div>
+                    <div><strong>30 Hari</strong><span>Siklus</span></div>
+                </div>
+                <button class="invest" data-product="${product.n}" data-price="${product.p}">Invest</button>
+            `;
+            
+            listEl.appendChild(card);
+            
+            // Animate card entrance
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 50);
+        }
+        
+        // ============================================
+        // INVEST BUTTON HANDLER
+        // ============================================
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('invest')) {
+                const productName = e.target.getAttribute('data-product');
+                const productPrice = e.target.getAttribute('data-price');
+                investProduct(productName, productPrice);
+            }
+        });
+        
+        async function investProduct(productName, productPrice) {
+            try {
+                // Generate order ID
+                const orderId = 'ORD' + Date.now() + Math.floor(Math.random() * 1000);
+                
+                // Simpan order ke Firebase
+                await db.collection('orders').add({
+                    orderId: orderId,
+                    product: productName,
+                    price: parseInt(productPrice),
+                    userId: getUserId(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                });
+                
+                // Redirect ke halaman my-orders
+                window.location.href = 'my-orders.html';
+                
+            } catch (error) {
+                console.error('Error saving order:', error);
+                alert('Gagal melakukan investasi. Silakan coba lagi.');
+            }
+        }
+        
+        // ============================================
+        // USER ID HELPER
+        // ============================================
+        function getUserId() {
+            let userId = localStorage.getItem('foxconn_userId');
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('foxconn_userId', userId);
+            }
+            return userId;
+        }
+        
+        // ============================================
+        // PREVENT DOUBLE TAP ZOOM
+        // ============================================
+        let lastTap = 0;
+        document.addEventListener('touchend', function(e) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 500 && tapLength > 0) {
+                e.preventDefault();
+            }
+            lastTap = currentTime;
+        });
+    </script>
+</body>
+</html>
